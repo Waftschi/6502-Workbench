@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>6502 Workbench</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="shell">
+  <header class="top">
+    <div>
+      <h1>6502 Workbench</h1>
+      <p class="sub">Write assembly, see the machine code it becomes, and step through the CPU one instruction at a time.</p>
+    </div>
+    <div class="pick">
+      <label class="cap" for="prog">Example program</label>
+      <div class="pickrow">
+        <select id="prog"></select>
+        <button class="btn small" id="restore" type="button" title="Put the original example source back">Restore</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="lesson"><span class="cap">What to watch</span><p id="lesson"></p></div>
+
+  <div class="layout">
+    <div class="col">
+      <section class="panel p-code" aria-label="Program">
+        <div class="bar">
+          <div class="tabs" role="tablist">
+            <button class="tab" role="tab" id="tabSrc" aria-selected="true" aria-controls="editorWrap" type="button">Source</button>
+            <button class="tab" role="tab" id="tabLst" aria-selected="false" aria-controls="listing" type="button">Machine code</button>
+          </div>
+          <span class="pill" id="status" data-k="idle" role="status">Not assembled</span>
+        </div>
+        <div class="editor" id="editorWrap">
+          <div class="gutter" id="gutter" aria-hidden="true"></div>
+          <div class="codewrap">
+            <div class="hl" id="hl" hidden></div>
+            <textarea id="src" spellcheck="false" wrap="off" autocapitalize="off" autocomplete="off" autocorrect="off" aria-label="Assembly source"></textarea>
+          </div>
+        </div>
+        <div class="listing" id="listing" role="tabpanel" hidden></div>
+        <div class="controls">
+          <button class="btn" id="bAsm" type="button">Assemble</button>
+          <button class="btn" id="bStep" type="button">Step</button>
+          <button class="btn primary" id="bRun" type="button">Run</button>
+          <button class="btn" id="bReset" type="button">Reset</button>
+          <label class="spd"><span class="cap">Speed</span>
+            <select id="speed" aria-label="Run speed">
+              <option value="1">1 / s</option><option value="2">2 / s</option><option value="5">5 / s</option>
+              <option value="20">20 / s</option><option value="100">100 / s</option><option value="1000">1,000 / s</option>
+              <option value="10000">10,000 / s</option><option value="max">Max</option>
+            </select>
+          </label>
+        </div>
+        <div class="msgs" id="msgs" aria-live="polite"></div>
+      </section>
+
+      <section class="panel p-disp" aria-label="Pixel display">
+        <h2 class="cap">Pixel display · $0200–$05FF</h2>
+        <div class="screenwrap">
+          <div class="screenbox">
+            <canvas id="screen" width="32" height="32" aria-label="32 by 32 pixel display"></canvas>
+            <div class="swatches" id="swatches"></div>
+          </div>
+          <div class="pad-wrap">
+            <span class="cap">Keys</span>
+            <div class="pad">
+              <button class="u" type="button" data-k="119" aria-label="Up (W)">↑</button>
+              <button class="l" type="button" data-k="97" aria-label="Left (A)">←</button>
+              <button class="d" type="button" data-k="115" aria-label="Down (S)">↓</button>
+              <button class="r" type="button" data-k="100" aria-label="Right (D)">→</button>
+            </div>
+            <p class="hint">Store 0–F at $0200 and up to color a pixel, 32 per row. Address $FE gives a random byte on every read. $FF holds the last key pressed: W A S D or arrows.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="col">
+      <section class="panel p-cpu" aria-label="CPU state">
+        <h2 class="cap">CPU</h2>
+        <div class="regs" id="regs"></div>
+        <div class="flags" id="flags"></div>
+        <p class="flagkey">N negative · V overflow · B break · D decimal · I irq off · Z zero · C carry</p>
+        <div class="counters"><span>Cycles <b id="cyc">0</b></span><span>Instructions <b id="cnt">0</b></span><span>Status byte <b id="pbyte">$24</b></span></div>
+        <div class="next" id="next"></div>
+        <div class="last" id="last"></div>
+      </section>
+
+      <section class="panel p-mem" aria-label="Memory">
+        <h2 class="cap">Memory · page <span id="pageLbl">$06</span></h2>
+        <div class="memctl">
+          <button class="qb" type="button" data-page="0">Zero page</button>
+          <button class="qb" type="button" data-page="1">Stack</button>
+          <button class="qb" type="button" data-page="2">Display</button>
+          <button class="qb" type="button" data-page="6">Program</button>
+          <span class="pager">
+            <button id="pgPrev" type="button" aria-label="Previous page">‹</button>
+            <span>$</span><input id="pgIn" type="text" maxlength="2" value="06" aria-label="Page number in hex" autocomplete="off" spellcheck="false">
+            <button id="pgNext" type="button" aria-label="Next page">›</button>
+          </span>
+        </div>
+        <div class="memgrid" id="mem"></div>
+        <p class="memkey"><i class="k-prog"></i>program byte <i class="k-pc"></i>next instruction <i class="k-wr"></i>just written <i class="k-sp"></i>stack pointer</p>
+      </section>
+    </div>
+  </div>
+
+  <details class="ref">
+    <summary>Reference: syntax, addressing modes, instructions</summary>
+    <div class="refbody" id="refBody"></div>
+  </details>
+  <p class="foot">Emulates the NMOS 6502 with its 56 official instructions, cycle counts and decimal mode. Unofficial opcodes are not included. BRK stops the program instead of starting an interrupt.</p>
+</div>
+<script src="js/core.js"></script>
+<script src="js/examples.js"></script>
+<script src="js/ui.js"></script>
+</body>
+</html>

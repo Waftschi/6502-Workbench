@@ -1,0 +1,10 @@
+{
+  "name": "asm6502-workbench",
+  "version": "1.0.0",
+  "description": "6502 assembler and CPU emulator for learning, runs in the browser",
+  "scripts": {
+    "test": "node test/test.js",
+    "start": "npx http-server . -p 8080 -c-1"
+  },
+  "license": "MIT"
+}
