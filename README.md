@@ -1,40 +1,46 @@
 # 6502 Workbench
 
-Ein 6502-Assembler und CPU-Emulator zum Lernen. Läuft komplett im Browser, ohne Build-Schritt und ohne Abhängigkeiten.
+**English** · [Deutsch](README.de.md)
 
-- Zwei-Pass-Assembler: alle 56 offiziellen Befehle, 13 Adressierungsarten, Labels, Konstanten, `.org`, `.byte`, `.word`, `.text`, `.res`
-- CPU mit Flags, Zykluszählung und Dezimalmodus (NMOS 6502)
-- Schrittweise Ausführung mit Erklärung, Breakpoints, Registeranzeige
-- Speicheransicht (Hex), 32x32-Pixeldisplay ab `$0200`, `$FE` = Zufallsbyte, `$FF` = letzte Taste
-- 7 Beispielprogramme
+A 6502 assembler and CPU emulator for learning. Runs entirely in the browser, with no build step and no dependencies.
 
-## Starten
+- Two-pass assembler: all 56 official instructions, 13 addressing modes, labels, constants, `.org`, `.byte`, `.word`, `.text`, `.res`
+- CPU with flags, cycle counting and decimal mode (NMOS 6502)
+- Step-by-step execution with explanations, breakpoints and a register view
+- Hex memory view, 32x32 pixel display from `$0200`, `$FE` = random byte, `$FF` = last key pressed
+- 7 example programs
 
-`index.html` direkt im Browser öffnen, oder mit einem lokalen Server:
+## Getting started
+
+Open `index.html` directly in a browser, or use a local server:
 
 ```
 npm start
 ```
 
-In IntelliJ IDEA: Rechtsklick auf `index.html` > *Open in > Browser*.
+In IntelliJ IDEA: right-click `index.html` > *Open in > Browser*.
 
 ## Tests
 
-Benötigt Node.js (keine weiteren Pakete):
+Requires Node.js (no other packages):
 
 ```
 npm test
 ```
 
-## Struktur
+## Structure
 
 ```
-index.html        Seite
-css/style.css     Styles (hell/dunkel automatisch)
-js/core.js        Opcode-Tabelle, Assembler, CPU, Disassembler
-js/examples.js    Beispielprogramme
-js/ui.js          Oberfläche
-test/test.js      Tests für Assembler und CPU
+index.html        Page
+css/style.css     Styles (light/dark automatically)
+js/core.js        Opcode table, assembler, CPU, disassembler
+js/examples.js    Example programs
+js/ui.js          User interface
+test/test.js      Tests for assembler and CPU
 ```
 
-`BRK` stoppt das Programm, statt einen Interrupt auszulösen. Inoffizielle Opcodes sind nicht enthalten.
+`BRK` stops the program instead of triggering an interrupt. Unofficial opcodes are not included.
+
+## License
+
+MIT, see [LICENSE](LICENSE).
